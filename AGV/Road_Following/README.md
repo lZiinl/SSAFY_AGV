@@ -161,7 +161,8 @@ save_button.on_click(lambda x: save_snapshot())
 약 3400장의 데이터 이미지를 수집했다.;;
 ![image](https://github.com/homekepa/SSAFY_AGV/assets/91517560/558bf705-c2f4-498d-a291-00d1aef370f8)
 
-
+---
+---
 # Train Model
 이제 위에서 수집한 데이터들을 학습시킬 차례이다.
 - Colab에서 데이터 학습을 진행했습니다. 
@@ -280,7 +281,7 @@ model = model.to(device)
 
 ## 6. model 훈련하기
 손실이 감소되면 최상의 모델을 저장하기 위해 50 에포크 동안 훈련한다.  
-훈련을 모두 마치면, "Success" 가 출력됩니다.
+훈련을 모두 마치면, "Success" 가 출력된된다.
 ```
 NUM_EPOCHS = 50
 BEST_MODEL_PATH = 'best_steering_model_xy_test.pth'
@@ -324,4 +325,143 @@ print('success')
 모델이 훈련되면 best_steering_model_xy.pth 파일이 생성된다.
 colab에서 약 3400장 학습하는 하는데 걸린 시간 약 30분 걸렸다.
 
+---
+---
 # Live Demo
+이제 위에서 학습한 model을 통해 AGV를 이동시킨면 된다.
+## 1. 모델 불러오기
+모델 학습에서 ResNet-18 모델을 사용하기에 불러온다.
+torch.nn.Linear(512, 2) >> 입력 차원 512와 출력 차원 2를 갖는 선형 레이어를 생성한다.
+학습된 모델 가중치를가져온다.
+```
+import torchvision
+import torch
+
+model = torchvision.models.resnet18(pretrained=False)
+model.fc = torch.nn.Linear(512, 2)
+model.load_state_dict(torch.load('best_steering_model_xy_test.pth'))
+```
+
+## 2. CPU -> GPU
+현재 모델 가중치는 CPU메모리에 있다. 아래 코드를 통해 GPU장치로 전송한다
+```
+device = torch.device('cuda')
+model = model.to(device)
+#.half() : 부동소수점 형식을 16비트로 낮춰서 메모리 사용량을 줄이고 연산 속도를 높인다.
+model = model.eval().half()
+```
+
+## 3.전처리
+이제 모델을 로드했지만 약간의 문제가 있다.  
+훈련된 모델의 형식이 카메라의 형식과 정확히 일치하지 않는다.  
+이를 위해 전처리를 해야 한다.  
+이 과정에는 다음 단계가 포함된다.
+1. HWC 레이아웃에서 CHW 레이아웃으로 변환
+2. 훈련 중에 사용한 것과 동일한 매개변수를 사용하여 정규화(카메라는 [0, 255] 범위의 값을 제공하고 훈련된 이미지는 [0, 1] 범위로 로드되므로 255.0으로 스케일링해야 한다).
+3. 데이터를 CPU 메모리에서 GPU 메모리로 전송
+4. 배치 차원을 추가
+```
+import torchvision.transforms as transforms
+import torch.nn.functional as F
+import cv2
+import PIL.Image
+import numpy as np
+
+mean = torch.Tensor([0.485, 0.456, 0.406]).cuda().half()
+std = torch.Tensor([0.229, 0.224, 0.225]).cuda().half()
+
+def preprocess(image):
+    image = PIL.Image.fromarray(image)
+    image = transforms.functional.to_tensor(image).to(device).half()
+    image.sub_(mean[:, None, None]).div_(std[:, None, None])
+    return image[None, ...]
+```
+
+## 4. 카메라 객체
+이제 전처리할 이미지를 불러올 카메라 객체를 정의해준다.
+로봇 객체도 정의한다.
+```
+from IPython.display import display
+import ipywidgets
+import traitlets
+from jetbot import Camera, bgr8_to_jpeg, Robot
+
+camera = Camera()
+image_widget = ipywidgets.Image()
+traitlets.dlink((camera, 'value'), (image_widget, 'value'), transform=bgr8_to_jpeg)
+display(image_widget)
+
+robot = Robot()
+```
+
+## 5. 슬라이더 UI
+### 속도에 관련된 슬라이더
+- 속도 제어 (speed_gain_slider): 인공지능 무인운반차량(AGV)을 속도를 나타낸다. (0이면 안 움직입니다.) 적당히 조절하면서 경로에 맞게 움직이는 확인한다.
+-	조향 게인 제어 (steering_gain_sloder): 조향 속도에 관한 슬라이더이다. 낮으면 코너에서 경로에 따라 회전을 하지못하고, 많으면 경로이탈시 심한 Z가 나타난다.
+-	조향 바이어스 제어 (steering_bias_slider): 양바퀴의 속도를 조절하는 슬라이더이다. 우측과 좌측에 같은 수치를 가해도 같은 속도가 아닐수 있기에 조향 방이어스를 통해 경로의 중앙으로 가도록 조정한다. 
+```
+speed_gain_slider = ipywidgets.FloatSlider(min=0.0, max=1.0, step=0.01, description='speed gain')
+steering_gain_slider = ipywidgets.FloatSlider(min=0.0, max=1.0, step=0.01, value=0.2, description='steering gain')
+steering_dgain_slider = ipywidgets.FloatSlider(min=0.0, max=0.5, step=0.001, value=0.0, description='steering kd')
+steering_bias_slider = ipywidgets.FloatSlider(min=-0.3, max=0.3, step=0.01, value=0.0, description='steering bias')
+
+display(speed_gain_slider, steering_gain_slider, steering_dgain_slider, steering_bias_slider)
+```
+
+### 방향 수치 슬라이더
+학습된 모델의 가중치를 통해 나온 값을 확인 할수 있는 슬라이더이다.
+값은 실제 목표의 실제 각도가 아니라 거의 비례적인 값이다.
+실제 각도가 0일 때 이 값은 0이 되고, 실제 각도와 함께 증가/감소할 것이다.
+```
+x_slider = ipywidgets.FloatSlider(min=-1.0, max=1.0, description='x')
+y_slider = ipywidgets.FloatSlider(min=0, max=1.0, orientation='vertical', description='y')
+steering_slider = ipywidgets.FloatSlider(min=-1.0, max=1.0, description='steering')
+speed_slider = ipywidgets.FloatSlider(min=0, max=1.0, orientation='vertical', description='speed')
+
+display(ipywidgets.HBox([y_slider, speed_slider]))
+display(x_slider, steering_slider)
+```
+
+## 6. 동작
+다음으로, 카메라 값이 변경될 때마다 호출되는 함수를 생성한다.
+1. 카메라 이미지를 전처리
+2. 신경망을 실행
+3. 근사 조향 값을 계산
+4. 비례/미분 제어(PD)를 사용하여 모터를 제어
+```
+angle = 0.0
+angle_last = 0.0
+
+def execute(change):
+    global angle, angle_last
+    image = change['new']
+    xy = model(preprocess(image)).detach().float().cpu().numpy().flatten()
+    x = xy[0]
+    y = (0.5 - xy[1]) / 2.0
+    
+    # 인공지능 무인운반차량(AGV)이 가고자 하는 방향의 x,y 값 표시
+    x_slider.value = x
+    y_slider.value = y
+    
+    # 인공지능 무인운반차량(AGV)의 속도 표시
+    speed_slider.value = speed_gain_slider.value
+    
+    #조향값 계산
+    angle = np.arctan2(x, y)
+    
+    #PID 제어를 이용한 모터 제어
+    pid = angle * steering_gain_slider.value + (angle - angle_last) * steering_dgain_slider.value
+    angle_last = angle
+    
+    steering_slider.value = pid + steering_bias_slider.value
+    
+    robot.left_motor.value = max(min(speed_slider.value + steering_slider.value, 1.0), 0.0)
+    robot.right_motor.value = max(min(speed_slider.value - steering_slider.value, 1.0), 0.0)
+    
+execute({'new': camera.value})
+
+## 위 함수 실행 
+camera.observe(execute, names='value')
+```
+
+동작 영상 : https://youtube.com/shorts/orMyBk0aYgo?si=3nwG6N93PuReNzj4
