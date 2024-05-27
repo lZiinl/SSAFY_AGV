@@ -1,0 +1,144 @@
+[
+    {
+        "id": "bc86bdb1.303a",
+        "type": "mqtt in",
+        "z": "cc546547012ef05c",
+        "name": "",
+        "topic": "agv0/image",
+        "qos": "2",
+        "datatype": "auto",
+        "broker": "f98f63b3ef431191",
+        "nl": false,
+        "rap": false,
+        "inputs": 0,
+        "x": 566,
+        "y": 880,
+        "wires": [
+            [
+                "1b1a0556.14207b",
+                "74b30176185842ee"
+            ]
+        ]
+    },
+    {
+        "id": "1b1a0556.14207b",
+        "type": "image viewer",
+        "z": "cc546547012ef05c",
+        "name": "",
+        "width": "140",
+        "data": "payload",
+        "dataType": "msg",
+        "active": true,
+        "x": 1290,
+        "y": 880,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "19380c57.bd1cc4",
+        "type": "template",
+        "z": "cc546547012ef05c",
+        "name": "",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "<img height=\"320px\" src=\"data:image/jpg;base64,{{{payload}}}\">",
+        "output": "str",
+        "x": 1000,
+        "y": 880,
+        "wires": [
+            [
+                "81bd5139.448d1"
+            ]
+        ]
+    },
+    {
+        "id": "81bd5139.448d1",
+        "type": "ui_template",
+        "z": "cc546547012ef05c",
+        "group": "00a73f340fef2982",
+        "name": "img",
+        "order": 15,
+        "width": 6,
+        "height": 7,
+        "format": "<div ng-bind-html=\"msg.payload\"></div>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": false,
+        "templateScope": "local",
+        "className": "",
+        "x": 1170,
+        "y": 880,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "74b30176185842ee",
+        "type": "base64",
+        "z": "cc546547012ef05c",
+        "name": "",
+        "action": "",
+        "property": "payload",
+        "x": 780,
+        "y": 880,
+        "wires": [
+            [
+                "19380c57.bd1cc4"
+            ]
+        ]
+    },
+    {
+        "id": "f98f63b3ef431191",
+        "type": "mqtt-broker",
+        "name": "local Broker",
+        "broker": "192.168.110.120",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "00a73f340fef2982",
+        "type": "ui_group",
+        "name": "Car Info",
+        "tab": "f341c67286c640e4",
+        "order": 1,
+        "disp": true,
+        "width": "19",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "f341c67286c640e4",
+        "type": "ui_tab",
+        "name": "Car Info",
+        "icon": "dashboard",
+        "order": 3,
+        "disabled": false,
+        "hidden": false
+    }
+]
