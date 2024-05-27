@@ -10,3 +10,5 @@ node-red를 통한 모니터링 UI 구성 및 AGV 목적지 설정을 위한 버
 ![image](https://github.com/lZiinl/SSAFY_AGV/assets/149471946/5ab422c3-2598-4cba-9121-f7dce1e70dcd)
 <br>
 
+## 장애물 인식
+![image](https://github.com/lZiinl/SSAFY_AGV/assets/149471946/d39c994d-6032-4037-b443-c3c9a3390043)
