@@ -12,6 +12,6 @@
 8. 조도 센서 시험<br>
 9. 조도 센서 데이터 MQTT로 전송 및 Node-red에서 CSV 파일로 로깅하기 위해 전체 데이터 payload에 담아 str 형식으로 전송<br>
 10. AWS를 활용해 DB에 데이터 로깅을 하기 위해 JSON 파일로 전송<br>
-11. AWS IoT에서 Dymanodb로 연결이 안되는 문제가 생겨 db를 Firebase로 교체하여 데이터 로깅
-12. 장애물 유무에 따른 AGV 제어를 위해 제어 신호를 Broker Server에 전달
-13. 최종 코드
+11. AWS IoT에서 Dymanodb로 연결이 안되는 문제가 생겨 db를 Firebase로 교체하여 데이터 로깅<br>
+12. 장애물 유무에 따른 AGV 제어를 위해 제어 신호를 Broker Server에 전달<br>
+13. 최종 코드<br>
