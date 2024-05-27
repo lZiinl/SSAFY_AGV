@@ -49,7 +49,7 @@ Object Detection값은 RPI에서 파악한 전방 뮬체가 감지 되었을 시
 
 mode_change값은 수동에서 자동 혹은 자동에서 수동으로 전환하는 키워드이다. <br>
 
-_Color_(red, blue, orange, green, purple, yellow)값이 들어 왔을 떄 목적지를 전환하고 자동으로 전환한다. (자동상태에서 전환되지 않는다.) <br>
+_Color_(red, blue, orange, green, purple, yellow)값이 들어 왔을 때 목적지를 전환하고 자동으로 전환한다. (자동상태에서 전환되지 않는다.) <br>
 
 
 ```
@@ -479,5 +479,5 @@ startBtn.on_click(start)
 ```
 
 WorkingAreaFind()에서 목적지에 도작하면 start()함수를 호출하며 수동으로 전환한다. <br>
-버튼의 상태는 Start와 stop인 두 상태만 존재하며, 토글로 작동한다. <br>
+버튼의 상태는 Start와 stop인 두 상태만 존재하며, 토글로 동작한다. <br>
 
