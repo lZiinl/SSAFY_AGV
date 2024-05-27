@@ -9,8 +9,8 @@ JETANK AI Kit을 조립 및 사용했습니다.<br>
 
 ## 과정
 
-1. Road_Following
+### 1. Road_Following
 
-2. Color_Recognition
+### 2. Color_Recognition
 
-3. MQTT 송/수신
+### 3. MQTT 송/수신
