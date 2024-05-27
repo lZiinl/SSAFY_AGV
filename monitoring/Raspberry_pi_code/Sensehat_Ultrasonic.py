@@ -1,3 +1,6 @@
+#센스헷의 온습도, 각도, 초음파 센서 융합 1
+
+
 import time
 from gpiozero import DistanceSensor
 from sense_hat import SenseHat
