@@ -4,7 +4,7 @@ import openai
 import json
 
 # Firebase 서비스 계정 키 파일 경로
-cred_path = './kfcproject-2fcc0-firebase-adminsdk-s7bwc-8baeeb05ff.json'
+cred_path = ''
 
 # Firebase 초기화
 cred = credentials.Certificate(cred_path)
@@ -24,7 +24,7 @@ print(json.dumps(data, indent=2))
 data_json = json.dumps(data)
 
 # OpenAI API 키 설정
-openai.api_key = "sk-proj-v2kfukk3R44SjlfMVbNpT3BlbkFJtcL68J8NS0ocLLNdEpbB"
+openai.api_key = ""
 
 # OpenAI API를 통해 평균 계산 요청
 prompt = (
