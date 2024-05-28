@@ -2,7 +2,8 @@
 <br>
 Database에 저장된 데이터 중 최근 10개를 읽어오고 openAI를 활용하여 분석 요청<br>
 온습도 10개의 평균값을 각각 출력<br>
-![image](https://github.com/lZiinl/SSAFY_AGV/assets/149471946/fe260f44-5407-4fed-a529-201c4350134a)
+![image](https://github.com/lZiinl/SSAFY_AGV/assets/149471946/b988e829-89a3-4b89-be15-9a0060616bba)
+
 <br>
 
 ## 데이터 베이스에서 데이터 불러오기<br>
