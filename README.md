@@ -1,6 +1,5 @@
 # SSAFY_AGV
-<br>
-SSAFY 11기 AGV(무인운반로봇) 프로젝트
+> SSAFY 11기 AGV(무인운반로봇) 프로젝트
 <br>
 
 ## 프로젝트 소개
