@@ -39,7 +39,7 @@ angle = 0
 
 # Firebase Realtime Database에 연결하는 Firebase 객체 생성
 # project host url
-firebase_url = "https://kfcproject-2fcc0-default-rtdb.firebaseio.com/"
+firebase_url = ""
 firebase = firebase.FirebaseApplication(firebase_url, None)
 
 # 한국 시간대 (Asia/Seoul)로 설정
